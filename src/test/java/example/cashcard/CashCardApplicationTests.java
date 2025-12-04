@@ -26,7 +26,10 @@ class CashCardApplicationTests {
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		Number id = documentContext.read("$.id");
-		assertThat(id).isNotNull();
+		assertThat(id).isEqualTo(99);
+
+		Double amount = documentContext.read("$.amount");
+		assertThat(amount).isEqualTo(123.45);
 	}
 
 }
@@ -69,6 +72,6 @@ class CashCardApplicationTests {
  *            Number id = documentContext.read("$.id");
  *            assertThat(id).isNotNull();
  *            We expect that when we request a Cash Card with id of 99 a JSON
- *            object will be returned with something in the id field. 
+ *            object will be returned with something in the id field.
  * 
  */
