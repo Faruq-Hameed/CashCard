@@ -2,6 +2,7 @@ package example.cashcard;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,15 +14,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cashcards") // a companion to @RestController that indicates which address requests must
                               // have to access this Controller.
 public class CashCardController {
-    private Map<Long, CashCard> cashCards;
 
-    public CashCardController() {
-        this.cashCards = new HashMap<>();
+    private final CashCardRepository cashCardRepository;
+
+    public CashCardController(CashCardRepository cashCardRepository) {
+        this.cashCardRepository = cashCardRepository;
     }
 
     @GetMapping("/{cashCardId}") // @GetMapping marks a method as a handler method. GET requests
     private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId) {
-        CashCard cashCard = new CashCard(99L, 123.45);
-        return ResponseEntity.ok(cashCard);
+        Optional<CashCard> cashCardOptional = this.cashCardRepository.findById(cashCardId);
+        if (cashCardOptional.isPresent()) { //know what to do if present
+            return ResponseEntity.ok(cashCardOptional.get()); //get the item and return it 
+        } else {
+            return ResponseEntity.notFound().build(); //throw error
+        }
     }
 }
