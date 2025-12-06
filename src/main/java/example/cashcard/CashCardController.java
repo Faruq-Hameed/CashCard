@@ -1,7 +1,5 @@
 package example.cashcard;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
@@ -26,8 +24,12 @@ public class CashCardController {
         Optional<CashCard> cashCardOptional = this.cashCardRepository.findById(cashCardId);
         if (cashCardOptional.isPresent()) { //know what to do if present
             return ResponseEntity.ok(cashCardOptional.get()); //get the item and return it 
-        } else {
+        } 
+        else {
             return ResponseEntity.notFound().build(); //throw error
         }
+        // return this.cashCardRepository.findById(cashCardId)
+        // .map(ResponseEntity::ok) //if found, return ok response with the item
+        // .orElseGet(() -> ResponseEntity.notFound().build()); //if not found, return not found response
     }
 }

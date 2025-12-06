@@ -1,6 +1,8 @@
 package example.cashcard;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.relational.core.mapping.Column;
+import org.springframework.data.relational.core.mapping.Table;
 
 // public class CashCard {
 //     private static long counter = 0; // shared across all objects
@@ -33,5 +35,39 @@ import org.springframework.data.annotation.Id;
 //     }
 // }
 
-record CashCard(@Id Long id, Double amount) {
+// @Table("cash_card")
+// public class CashCard {
+//     @Id
+//     private Long id;
+
+//     @Column("amount")
+//     private Double amount;
+// }
+
+public record CashCard(
+        @Id Long id,
+        Double amount) {
 }
+
+
+// @Table("cash_cards")
+// public class CashCard {
+//     @Id
+//     private Long id;
+
+//     @Column("balance")
+//     private Double amount;
+
+//     // constructor
+//     public CashCard(Long id, Double amount) {
+//         this.id = id;
+//         this.amount = amount;
+//     }
+
+//     // getters
+//     public Long getId() { return id; }
+//     public Double getAmount() { return amount; }
+
+//     // equals, hashCode, toString (boilerplate)
+// }
+
