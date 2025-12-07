@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController() // make th class a RestController Component capable of handling HTTP requests
 @RequestMapping("/cashcards") // a companion to @RestController that indicates which address requests must
@@ -37,7 +38,11 @@ public class CashCardController {
     }
 
     @PostMapping
-    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCradRequest) {
-        return ResponseEntity.created(URI.create("/uri/to/the/new/resource")).build();
+    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb) {
+        CashCard saveCashCard = this.cashCardRepository.save(newCashCardRequest);
+        URI locationOfNewCashCard = ucb.path("cashcards/{id}")
+                .buildAndExpand(saveCashCard.id())
+                .toUri();
+        return ResponseEntity.created(locationOfNewCashCard).build(); // return 201 created response with our built URI as location header
     }
 }
