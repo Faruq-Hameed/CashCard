@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.net.URI;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class CashCardApplicationTests {
 
@@ -45,8 +47,16 @@ class CashCardApplicationTests {
 
 		ResponseEntity<Void> createResponse = restTemplate.postForEntity("/cashcards", newCard, Void.class);
 
-		assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
-	}
+		assertThat(createResponse.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+	
+		/**Get the location of the new location from the response header  of  the Post request made*/
+		URI locationOfTheNewCashCard = createResponse.getHeaders().getLocation();
+	
+	ResponseEntity<String> getResponse = restTemplate.getForEntity(locationOfTheNewCashCard, String.class);//get the response in the located api endpoints got from location header
+	
+	//confirm that the response status code is equal to ok
+	assertThat(getResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+}
 }
 
 /**
