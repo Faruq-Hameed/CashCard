@@ -3,6 +3,10 @@ package example.cashcard;
 import java.net.URI;
 import java.util.Optional;
 
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,6 +47,24 @@ public class CashCardController {
         URI locationOfNewCashCard = ucb.path("cashcards/{id}")
                 .buildAndExpand(saveCashCard.id())
                 .toUri();
-        return ResponseEntity.created(locationOfNewCashCard).build(); // return 201 created response with our built URI as location header
+        return ResponseEntity.created(locationOfNewCashCard).build(); // return 201 created response with our built URI
+                                                                      // as location header
     }
+
+    // @GetMapping
+    // private ResponseEntity<Iterable<CashCard>> findAllCashCards(org.springframework.data.domain.Pageable pageable) {
+    //     Page<CashCard> page = this.cashCardRepository.findAll(
+    //             PageRequest.of(pageable.getPageNumber(),
+    //                     pageable.getPageSize(),
+    //                     pageable.getSortOr(
+    //                             Sort.by(Sort.Direction.DESC, "amount"))));
+
+    //     return ResponseEntity.ok(page.getContent());
+
+    //     // return ResponseEntity.ok(this.cashCardRepository.findAll(
+    //     // PageRequest.of(0,3, Sort.by(new Sort.Order(Sort.Direction.DESC, "amount")));
+    //     // ));
+
+    // }
+
 }
