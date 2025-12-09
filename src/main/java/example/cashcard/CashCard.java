@@ -1,8 +1,13 @@
 package example.cashcard;
 
-import org.springframework.data.annotation.Id;
+// import org.springframework.data.annotation.Id;/
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.GenerationType;
 
 // public class CashCard {
 //     private static long counter = 0; // shared across all objects
@@ -44,10 +49,13 @@ import org.springframework.data.relational.core.mapping.Table;
 //     private Double amount;
 // }
 
+@Entity
 public record CashCard(
-        @Id Long id,
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        Long id,
         Double amount) {
-}
+        }
 
 
 // @Table("cash_cards")
