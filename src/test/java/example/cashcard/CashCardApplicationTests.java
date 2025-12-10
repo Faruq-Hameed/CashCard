@@ -90,4 +90,32 @@ class CashCardApplicationTests {
 		JSONArray page = documentContext.read("$[*]");
 		assertThat(page.size()).isEqualTo(1);
 	}
+
+	@Test
+	void shouldReturnASortedPageOfCashCards() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/cashcards?page=0&size=1&sort=amount,desc",
+				String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray read = documentContext.read("$[*]");
+		assertThat(read.size()).isEqualTo(1);
+
+		double amount = documentContext.read("$[0].amount");
+		assertThat(amount).isEqualTo(150.00);
+	}
+
+	//test with no parameters i.e default values expected to be in th controller
+	@Test
+	void shouldReturnASortedPageOfCashCardsWithNoParametersAndUseDefaultValues() {
+		ResponseEntity<String> response = restTemplate.getForEntity("/cashcards", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		DocumentContext documentContext = JsonPath.parse(response.getBody());
+		JSONArray page = documentContext.read("$[*]");
+		assertThat(page.size()).isEqualTo(3);
+
+		JSONArray amounts = documentContext.read("$..amount");
+		assertThat(amounts).containsExactly(1.00, 123.45, 150.00);
+	}
 }

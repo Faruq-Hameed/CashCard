@@ -3,7 +3,7 @@ package example.cashcard;
 import java.net.URI;
 import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -53,14 +53,19 @@ public class CashCardController {
 
     // @GetMapping
     // private ResponseEntity<Iterable<CashCard>> findAll() {
-    //     return ResponseEntity.ok(this.cashCardRepository.findAll());
+    // return ResponseEntity.ok(this.cashCardRepository.findAll());
     // }
 
     @GetMapping
-    private ResponseEntity<Iterable<CashCard>> findAll(org.springframework.data.domain.Pageable pageable) {
+    private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable) {
         Page<CashCard> page = this.cashCardRepository.findAll(
                 PageRequest.of(
-                        pageable.getPageNumber(), pageable.getPageSize()));
+                        pageable.getPageNumber(), // extracts the page query parameter from the request URI.
+                        pageable.getPageSize(), // extracts the size query parameter from the request URI.
+                        pageable.getSortOr(
+                            Sort.by(Sort.Direction.ASC, "amount") //default sorting by amount in ascending order
+                        ) // extracts the sort query parameter from the request URI.
+                    ));
         return ResponseEntity.ok(page.getContent());
     }
     // @GetMapping
