@@ -52,18 +52,32 @@ public class CashCardController {
     }
 
     // @GetMapping
-    // private ResponseEntity<Iterable<CashCard>> findAllCashCards(org.springframework.data.domain.Pageable pageable) {
-    //     Page<CashCard> page = this.cashCardRepository.findAll(
-    //             PageRequest.of(pageable.getPageNumber(),
-    //                     pageable.getPageSize(),
-    //                     pageable.getSortOr(
-    //                             Sort.by(Sort.Direction.DESC, "amount"))));
+    // private ResponseEntity<Iterable<CashCard>> findAll() {
+    //     return ResponseEntity.ok(this.cashCardRepository.findAll());
+    // }
 
-    //     return ResponseEntity.ok(page.getContent());
+    @GetMapping
+    private ResponseEntity<Iterable<CashCard>> findAll(org.springframework.data.domain.Pageable pageable) {
+        Page<CashCard> page = this.cashCardRepository.findAll(
+                PageRequest.of(
+                        pageable.getPageNumber(), pageable.getPageSize()));
+        return ResponseEntity.ok(page.getContent());
+    }
+    // @GetMapping
+    // private ResponseEntity<Iterable<CashCard>>
+    // findAllCashCards(org.springframework.data.domain.Pageable pageable) {
+    // Page<CashCard> page = this.cashCardRepository.findAll(
+    // PageRequest.of(pageable.getPageNumber(),
+    // pageable.getPageSize(),
+    // pageable.getSortOr(
+    // Sort.by(Sort.Direction.DESC, "amount"))));
 
-    //     // return ResponseEntity.ok(this.cashCardRepository.findAll(
-    //     // PageRequest.of(0,3, Sort.by(new Sort.Order(Sort.Direction.DESC, "amount")));
-    //     // ));
+    // return ResponseEntity.ok(page.getContent());
+
+    // // return ResponseEntity.ok(this.cashCardRepository.findAll(
+    // // PageRequest.of(0,3, Sort.by(new Sort.Order(Sort.Direction.DESC,
+    // "amount")));
+    // // ));
 
     // }
 
