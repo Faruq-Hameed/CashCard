@@ -27,9 +27,9 @@ class CashCardApplicationTests {
 	@Test
 	void shouldReturnACashCardWhenDataIsSaved() {
 		ResponseEntity<String> response = restTemplate
-				.withBasicAuth("sarah1", "abc123K") // use HTTP Basic authentication with these credentials
+				.withBasicAuth("sarah1", "abc123") // use HTTP Basic authentication with these credentials
 				.getForEntity("/cashcards/99", String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		Number id = documentContext.read("$.id");
@@ -42,10 +42,10 @@ class CashCardApplicationTests {
 	@Test
 	void shouldNotReturnACashCardWithAnUnknownId() {
 		ResponseEntity<String> response = restTemplate
-				.withBasicAuth("sarah1L", "abc123")
+				.withBasicAuth("sarah1", "abc123")
 				.getForEntity("/cashcards/1000", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 		assertThat(response.getBody()).isBlank();
 	}
 
@@ -133,5 +133,14 @@ class CashCardApplicationTests {
 
 		JSONArray amounts = documentContext.read("$..amount");
 		assertThat(amounts).containsExactly(1.00, 123.45, 150.00);
+	}
+
+	//test that a user who is not a card owner is rejected
+	@Test
+	void shouldRejectUsersWhoAreNotCardOwners() {
+		ResponseEntity<String> response = restTemplate
+				.withBasicAuth("hank-owns-no-cards", "qrs456")
+				.getForEntity("/cashcards/99", String.class);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
 	}
 }

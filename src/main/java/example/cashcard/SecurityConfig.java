@@ -24,8 +24,10 @@ class SecurityConfig {
         http.authorizeHttpRequests(
                 request -> request // the request matcher configuration
                         .requestMatchers("/cashcards/**") // the base path for our CashCardController
-                        .authenticated() // any request to /cashcards/** must be authenticated using HTTP Basic
-                                         // authentication
+                        // .authenticated() // any request to /cashcards/** must be authenticated using
+                        // HTTP Basic
+                        // // authentication
+                        .hasRole("CARD-OWNER") // any request to /cashcards/** must be from a user with the role // CARD-OWNER
         )
                 .httpBasic(Customizer.withDefaults()) // use HTTP Basic authentication
                 .csrf(csrf -> csrf.disable()); // disable CSRF for simplicity
@@ -48,7 +50,7 @@ class SecurityConfig {
 
         UserDetails hankOwnsNoCard = userBuilder
                 .username("hank-owns-no-cards")
-                .password("qrs456")
+                .password(passwordEncoder.encode("qrs456"))
                 .roles("NON-OWNER")
                 .build();
 
