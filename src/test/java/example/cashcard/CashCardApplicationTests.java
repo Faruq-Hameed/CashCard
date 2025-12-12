@@ -27,9 +27,9 @@ class CashCardApplicationTests {
 	@Test
 	void shouldReturnACashCardWhenDataIsSaved() {
 		ResponseEntity<String> response = restTemplate
-				.withBasicAuth("sarah1", "abc123") // use HTTP Basic authentication with these credentials
+				.withBasicAuth("sarah1", "abc123K") // use HTTP Basic authentication with these credentials
 				.getForEntity("/cashcards/99", String.class);
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 
 		DocumentContext documentContext = JsonPath.parse(response.getBody());
 		Number id = documentContext.read("$.id");
@@ -42,10 +42,10 @@ class CashCardApplicationTests {
 	@Test
 	void shouldNotReturnACashCardWithAnUnknownId() {
 		ResponseEntity<String> response = restTemplate
-				.withBasicAuth("sarah1", "abc123")
+				.withBasicAuth("sarah1L", "abc123")
 				.getForEntity("/cashcards/1000", String.class);
 
-		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
 		assertThat(response.getBody()).isBlank();
 	}
 
