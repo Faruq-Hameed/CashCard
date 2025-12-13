@@ -18,50 +18,54 @@ import org.springframework.security.web.SecurityFilterChain;
 // Configuration engine.
 class SecurityConfig {
 
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        @Bean
+        SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        http.authorizeHttpRequests(
-                request -> request // the request matcher configuration
-                        .requestMatchers("/cashcards/**") // the base path for our CashCardController
-                        // .authenticated() // any request to /cashcards/** must be authenticated using
-                        // HTTP Basic
-                        // // authentication
-                        .hasRole("CARD-OWNER") // any request to /cashcards/** must be from a user with the role // CARD-OWNER
-        )
-                .httpBasic(Customizer.withDefaults()) // use HTTP Basic authentication
-                .csrf(csrf -> csrf.disable()); // disable CSRF for simplicity
-        return http.build();
-    }
+                http.authorizeHttpRequests(
+                                request -> request // the request matcher configuration
+                                                .requestMatchers("/cashcards/**") // the base path for our
+                                                                                  // CashCardController
+                                                // .authenticated() // any request to /cashcards/** must be
+                                                // authenticated using
+                                                // HTTP Basic
+                                                // // authentication
+                                                .hasRole("CARD-OWNER") // any request to /cashcards/** must be from a
+                                                                       // user with the role // CARD-OWNER
+                )
+                                .httpBasic(Customizer.withDefaults()) // use HTTP Basic authentication
+                                .csrf(csrf -> csrf.disable()); // disable CSRF for simplicity
+                return http.build();
+        }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+        @Bean
+        PasswordEncoder passwordEncoder() {
+                return new BCryptPasswordEncoder();
+        }
 
-    @Bean
-    UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        UserBuilder userBuilder = User.builder(); // a builder for UserDetails objects
-        UserDetails sarah = userBuilder // from the builder, build a UserDetails object
-                .username("sarah1") // the username is sarah1
-                .password(passwordEncoder.encode("abc123")) // password is sarah1Pass encoded using BCrypt
-                .roles("CARD-OWNER") // assign the user the role of USER
-                .build(); // build the UserDetails object
+        @Bean
+        UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+                UserDetails sarah = User.builder() // a builder for UserDetails objects
+                                .username("sarah1") // the username is sarah1
+                                .password(passwordEncoder.encode("abc123")) // password is sarah1Pass encoded using
+                                                                            // BCrypt
+                                .roles("CARD-OWNER") // assign the user the role of USER
+                                .build(); // build the UserDetails object
 
-        UserDetails hankOwnsNoCard = userBuilder
-                .username("hank-owns-no-cards")
-                .password(passwordEncoder.encode("qrs456"))
-                .roles("NON-OWNER")
-                .build();
+                UserDetails hankOwnsNoCard = User.builder() // a builder for UserDetails objects
+                                .username("hank-owns-no-cards")
+                                .password(passwordEncoder.encode("qrs456"))
+                                .roles("NON-OWNER")
+                                .build();
 
-        return new InMemoryUserDetailsManager(sarah, hankOwnsNoCard); // return an in-memory user details manager with
-                                                                      // the user we just
-        // built
-        /*
-         * Spring's IoC container will find the UserDetailsService Bean and Spring Data
-         * will use it when needed.
-         * Spring's IoC container will find the UserDetailsService Bean and Spring Data
-         * will use it when needed.
-         */
-    }
+                return new InMemoryUserDetailsManager(sarah, hankOwnsNoCard); // return an in-memory user details
+                                                                              // manager with
+                                                                              // the user we just
+                // built
+                /*
+                 * Spring's IoC container will find the UserDetailsService Bean and Spring Data
+                 * will use it when needed.
+                 * Spring's IoC container will find the UserDetailsService Bean and Spring Data
+                 * will use it when needed.
+                 */
+        }
 }

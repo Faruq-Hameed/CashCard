@@ -30,8 +30,7 @@ public class CashCardController {
 
     // @GetMapping("/{cashCardId}") // @GetMapping marks a method as a handler
     // method. GET requests
-    // private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId,
-    // Principal principal) {
+    // private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId) {
     // Optional<CashCard> cashCardOptional =
     // this.cashCardRepository.findById(cashCardId);
     // if (cashCardOptional.isPresent()) { // know what to do if present
@@ -49,19 +48,29 @@ public class CashCardController {
 
     @GetMapping("/{cashCardId}")
     private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId, Principal principal) {
-        CashCard cashCard = this.cashCardRepository.findByIdAndOwner(cashCardId, principal.getName());
-        if (cashCard != null) {
-            return ResponseEntity.ok(cashCard);
+        // CashCard cashCard = this.cashCardRepository.findByIdAndOwner(cashCardId,
+        // principal.getName());
+        // if (cashCard != null) {
+        // return ResponseEntity.ok(cashCard);
+        // } else {
+        // return ResponseEntity.notFound().build();
+        // }
+
+        Optional<CashCard> cashCardOptional = Optional.ofNullable(cashCardRepository
+                .findByIdAndOwner(cashCardId, principal.getName()));
+        if (cashCardOptional.isPresent()) { // know what to do if present
+            return ResponseEntity.ok(cashCardOptional.get()); // get the item and return it
         } else {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.notFound().build(); // throw error
         }
     }
 
     @PostMapping
-    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb) {
-        CashCard saveCashCard = this.cashCardRepository.save(newCashCardRequest);
+    private ResponseEntity<Void> createCashCard(@RequestBody CashCard newCashCardRequest, UriComponentsBuilder ucb, Principal principal) {
+        CashCard cashCardWithOwner = new CashCard(null, newCashCardRequest.amount(), principal.getName());
+        CashCard savedCashCard = cashCardRepository.save(cashCardWithOwner);
         URI locationOfNewCashCard = ucb.path("cashcards/{id}")
-                .buildAndExpand(saveCashCard.id())
+                .buildAndExpand(savedCashCard.id())
                 .toUri();
         return ResponseEntity.created(locationOfNewCashCard).build(); // return 201 created response with our built URI
                                                                       // as location header
@@ -91,7 +100,7 @@ public class CashCardController {
     @GetMapping
     private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable, Principal principal) {
         Page<CashCard> page = this.cashCardRepository.findByOwner(
-                principal.getName(),
+                principal.getName(), // The Principal holds our user's authenticated, authorized information
                 PageRequest.of(
                         pageable.getPageNumber(), // extracts the page query parameter from the request URI.
                         pageable.getPageSize(), // extracts the size query parameter from the request URI.
