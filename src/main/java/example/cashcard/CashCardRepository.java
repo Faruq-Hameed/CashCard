@@ -1,7 +1,14 @@
 package example.cashcard;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface CashCardRepository extends CrudRepository<CashCard, Long>, PagingAndSortingRepository<CashCard, Long>  { //CrudRepository is an interface supplied by Spring Data.
+public interface CashCardRepository extends CrudRepository<CashCard, Long>, PagingAndSortingRepository<CashCard, Long> { // CrudRepository
+
+    CashCard findByIdAndOwner(Long id, String owner);
+
+    Page<CashCard> findByOwner( String owner, PageRequest pageRequest);
+
 }

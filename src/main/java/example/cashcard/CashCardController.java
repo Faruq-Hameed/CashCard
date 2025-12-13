@@ -1,6 +1,7 @@
 package example.cashcard;
 
 import java.net.URI;
+import java.security.Principal;
 import java.util.Optional;
 
 import org.springframework.data.domain.Pageable;
@@ -27,18 +28,33 @@ public class CashCardController {
         this.cashCardRepository = cashCardRepository;
     }
 
-    @GetMapping("/{cashCardId}") // @GetMapping marks a method as a handler method. GET requests
-    private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId) {
-        Optional<CashCard> cashCardOptional = this.cashCardRepository.findById(cashCardId);
-        if (cashCardOptional.isPresent()) { // know what to do if present
-            return ResponseEntity.ok(cashCardOptional.get()); // get the item and return it
+    // @GetMapping("/{cashCardId}") // @GetMapping marks a method as a handler
+    // method. GET requests
+    // private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId,
+    // Principal principal) {
+    // Optional<CashCard> cashCardOptional =
+    // this.cashCardRepository.findById(cashCardId);
+    // if (cashCardOptional.isPresent()) { // know what to do if present
+    // return ResponseEntity.ok(cashCardOptional.get()); // get the item and return
+    // it
+    // } else {
+    // return ResponseEntity.notFound().build(); // throw error
+    // }
+    // // return this.cashCardRepository.findById(cashCardId)
+    // // .map(ResponseEntity::ok) //if found, return ok response with the item
+    // // .orElseGet(() -> ResponseEntity.notFound().build()); //if not found,
+    // return
+    // // not found response
+    // }
+
+    @GetMapping("/{cashCardId}")
+    private ResponseEntity<CashCard> findById(@PathVariable Long cashCardId, Principal principal) {
+        CashCard cashCard = this.cashCardRepository.findByIdAndOwner(cashCardId, principal.getName());
+        if (cashCard != null) {
+            return ResponseEntity.ok(cashCard);
         } else {
-            return ResponseEntity.notFound().build(); // throw error
+            return ResponseEntity.notFound().build();
         }
-        // return this.cashCardRepository.findById(cashCardId)
-        // .map(ResponseEntity::ok) //if found, return ok response with the item
-        // .orElseGet(() -> ResponseEntity.notFound().build()); //if not found, return
-        // not found response
     }
 
     @PostMapping
@@ -56,18 +72,36 @@ public class CashCardController {
     // return ResponseEntity.ok(this.cashCardRepository.findAll());
     // }
 
+    // @GetMapping
+    // private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable) {
+    // Page<CashCard> page = this.cashCardRepository.findAll(
+    // PageRequest.of(
+    // pageable.getPageNumber(), // extracts the page query parameter from the
+    // request URI.
+    // pageable.getPageSize(), // extracts the size query parameter from the request
+    // URI.
+    // pageable.getSortOr(
+    // Sort.by(Sort.Direction.ASC, "amount") // default sorting by amount in
+    // ascending order
+    // ) // extracts the sort query parameter from the request URI.
+    // ));
+    // return ResponseEntity.ok(page.getContent());
+    // }
+
     @GetMapping
-    private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable) {
-        Page<CashCard> page = this.cashCardRepository.findAll(
+    private ResponseEntity<Iterable<CashCard>> findAll(Pageable pageable, Principal principal) {
+        Page<CashCard> page = this.cashCardRepository.findByOwner(
+                principal.getName(),
                 PageRequest.of(
                         pageable.getPageNumber(), // extracts the page query parameter from the request URI.
                         pageable.getPageSize(), // extracts the size query parameter from the request URI.
                         pageable.getSortOr(
-                            Sort.by(Sort.Direction.ASC, "amount") //default sorting by amount in ascending order
+                                Sort.by(Sort.Direction.ASC, "amount") // default sorting by amount in ascending order
                         ) // extracts the sort query parameter from the request URI.
-                    ));
+                ));
         return ResponseEntity.ok(page.getContent());
     }
+
     // @GetMapping
     // private ResponseEntity<Iterable<CashCard>>
     // findAllCashCards(org.springframework.data.domain.Pageable pageable) {
