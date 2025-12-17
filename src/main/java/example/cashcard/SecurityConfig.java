@@ -44,20 +44,25 @@ class SecurityConfig {
 
         @Bean
         UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-                UserDetails sarah = User.builder() // a builder for UserDetails objects
+                User.UserBuilder users = User.builder();
+                UserDetails sarah = users // a builder for UserDetails objects
                                 .username("sarah1") // the username is sarah1
                                 .password(passwordEncoder.encode("abc123")) // password is sarah1Pass encoded using
                                                                             // BCrypt
                                 .roles("CARD-OWNER") // assign the user the role of USER
                                 .build(); // build the UserDetails object
 
-                UserDetails hankOwnsNoCard = User.builder() // a builder for UserDetails objects
+                UserDetails hankOwnsNoCard = users // a builder for UserDetails objects
                                 .username("hank-owns-no-cards")
                                 .password(passwordEncoder.encode("qrs456"))
                                 .roles("NON-OWNER")
                                 .build();
-
-                return new InMemoryUserDetailsManager(sarah, hankOwnsNoCard); // return an in-memory user details
+                UserDetails kumar = users
+                                .username("kumar2")
+                                .password(passwordEncoder.encode("xyz789"))
+                                .roles("CARD-OWNER")
+                                .build();
+                return new InMemoryUserDetailsManager(sarah, hankOwnsNoCard, kumar); // return an in-memory user details
                                                                               // manager with
                                                                               // the user we just
                 // built
